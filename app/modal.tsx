@@ -81,7 +81,7 @@ export default function ModalScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  label: { marginTop: 12, fontWeight: 'bold' },
+  label: { marginTop: 12, fontWeight: 'bold', color:'white' },
   input: {
     backgroundColor: '#fff',
     padding: 10,
