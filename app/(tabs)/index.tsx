@@ -1,98 +1,84 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Note, useNotes } from '../../hooks/useNotes';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// --- Component to render a single note item ---
+const NoteItem = ({ note, onPress }: { note: Note; onPress: () => void }) => {
+  const dateStr = new Date(note.date_updated).toLocaleDateString();
 
-export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hai Me!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <TouchableOpacity style={styles.noteItemContainer} onPress={onPress}>
+      <View style={styles.textContainer}>
+        <Text style={styles.noteTitle} numberOfLines={1}>{note.title}</Text>
+        <Text style={styles.noteDescription} numberOfLines={2}>
+          {note.description}
+        </Text>
+      </View>
+      <Text style={styles.noteDate}>{dateStr}</Text>
+    </TouchableOpacity>
+  );
+};
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+export default function NotesScreen() {
+  const { notes } = useNotes();
+  const router = useRouter();
+
+  const handleNotePress = (id: string) => {
+    router.push({ pathname: '/modal', params: { noteId: id } });
+  };
+
+  const handleAddPress = () => {
+    router.push('/modal');
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>My Notes ({notes.length})</Text>
+
+      <FlatList
+        data={notes}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <NoteItem note={item} onPress={() => handleNotePress(item.id)} />
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No notes yet.</Text>
+        }
+      />
+
+      <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
+        <Ionicons name="add" size={30} color="#fff" />
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: { flex: 1, padding: 16 },
+  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
+  noteItemContainer: {
+    backgroundColor: '#fff',
+    padding: 14,
+    marginBottom: 10,
+    borderRadius: 8,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  textContainer: { flex: 1, marginRight: 10 },
+  noteTitle: { fontWeight: 'bold', fontSize: 16 },
+  noteDescription: { color: '#666' },
+  noteDate: { fontSize: 12, color: '#999' },
+  addButton: {
     position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: '#007aff',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  emptyText: { textAlign: 'center', marginTop: 40 },
 });
