@@ -56,14 +56,15 @@ export default function NotesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
+  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10, color:'#fff' },
   noteItemContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     padding: 14,
     marginBottom: 10,
     borderRadius: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
   },
   textContainer: { flex: 1, marginRight: 10 },
   noteTitle: { fontWeight: 'bold', fontSize: 16 },
@@ -80,5 +81,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emptyText: { textAlign: 'center', marginTop: 40 },
+  emptyText: { textAlign: 'center', marginTop: 40, color:'#fff' },
 });
